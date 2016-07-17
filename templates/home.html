@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html ng-app="es-app">
+
+<head>
+    <title>Otis Home</title>
+    <link rel="stylesheet" type="text/css" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bower_components/datatables.net-dt/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bower_components/angular-material/angular-material.css">
+    <link rel="stylesheet" type="text/css" href="/static/bower_components/toastr/toastr.css">
+    <link rel="stylesheet" type="text/css" href="/static/intro.js/introjs.css">
+</head>
+
+<body style="background-color:rgba(250, 250, 250, 0.54)" ng-controller="searchCtrl">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">OUTIS - Visualise your data </a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+               
+            </div>
+
+            <div class="navbar-collapse collapse" id="navbar-main">
+                
+                <ul class="nav navbar-nav navbar-right" data-step="2" data-intro="Upload your log file here">
+                    <li><a class="btn " href="javascript:void(0);" onclick="javascript:introJs().start();">Take Tour</a></li>
+                    <li><a href="" data-toggle='modal' data-target='#data_upload'>Upload File</a></li>
+                    <li><a href="" data-toggle='modal' data-target='#data_export'>Export data</a></li>
+              
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding:6%" >
+        <div class="col-sm-8" data-step="1" data-intro="This portion shows you graph data of the results" >
+            <div class="panel">
+                
+                <canvas id="myChart" width="400" height="200"></canvas>
+                
+            </div>
+        </div>
+        <div class="col-sm-4" data-step="3" data-intro="Make data queries and do data analysis">
+            <div class="panel">
+                <div class="panel-body">
+                    <div ng-cloak>
+                        <md-content>
+                            <md-tabs md-dynamic-height md-border-bottom>
+                                <md-tab label="Search">
+                                    <md-content class="md-padding">
+                                        <md-content layout-padding>
+                                           
+                                                <form  ng-submit="searchData(search)">
+                                               
+                                                <md-input-container class="md-block">
+                                                    <label>QUERY :</label>
+                                                    <input type="text" ng-model="search.query" >
+                                                </md-input-container>
+
+                                                
+
+                                                 <md-select ng-model="search.option">
+                                                 <md-option ng-selected="true" ng-value="opt.value" ng-repeat="opt in array">[[ opt.text ]]</md-option>
+                                                </md-select>
+                                                
+                                                <br>
+                                                
+                                                 
+                                        
+                                               <md-button class="md-raised md-default" type="reset" ng-click="reset()">RESET</md-button> 
+                                                <md-button class="md-raised md-primary" type="submit" value="Submit">Search</md-button>
+
+
+                                                </form>
+
+                                              
+
+                                            
+                                            
+                                        </md-content>
+                                    </md-content>                                  
+                                </md-tab>
+                                <md-tab label="Aggregations">
+                                    <md-content class="md-padding">
+                                        <form ng-submit="aggrData(aggr)">
+                                            
+                                            <md-input-container class="md-block">
+                                                <label>FIELD NAME :</label>
+                                                <input type="text" ng-model="aggr.query">
+                                            </md-input-container>
+                                            
+                                          
+                                               
+                                                <md-select ng-model="aggr.option">
+                                                 <md-option ng-selected="true" ng-value="opt.value" ng-repeat="opt in array1">[[ opt.text ]]</md-option>
+                                                </md-select>
+
+                                             <md-button class="md-raised md-default" type="reset" ng-click="resetAggr()">RESET</md-button> 
+                                                <md-button class="md-raised md-primary" type="submit" value="Submit">Search</md-button>
+                                        </form>
+
+                                    </md-content>
+                                </md-tab>
+                                
+                            </md-tabs>
+                        </md-content>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12" data-step="4" data-intro="Data query resulsts are shown here as  a table">
+            <div class="panel">
+                <div class="panel-body">
+                    <table class="table" datatable="ng" >
+                        <thead>
+                            <th>attempt</th>
+                            <th>error</th>
+                            <th>error_type</th>
+                            <th>query</th>
+                            <th>success</th>
+                            <th>time</th>
+                            <th>type</th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="x in temp">
+                                <td>[[x._source.attempt]]</td>
+                                <td>[[x._source.error]]</td>
+                                <td>[[x._source.error_type]]</td>
+                                <td>[[x._source.query]]</td>
+                                <td>[[x._source.success]]</td>
+                                <td>[[x._source.time]]</td>
+                                <td>[[x._source.type]]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="data_upload" class="modal fade" role="dialog" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Upload Your file</h4>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="uploadFile(myFile)">
+                        Upload file:
+                        <input type="file" file-model="myFile">
+                        <br>
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="data_export" class="modal fade" role="dialog" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Export Your file</h4>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="exportData(search)" action="/static/data.csv">
+                        <md-checkbox ng-model="search.attempt">
+                                                  Attempt
+                                                </md-checkbox>
+
+                                                <md-checkbox ng-model="search.url">
+                                                  Url
+                                                </md-checkbox>
+
+                                                <md-checkbox ng-model="search.using">
+                                                  Using
+                                                </md-checkbox>
+
+                                                <md-checkbox ng-model="search.type">
+                                                  Type
+                                                </md-checkbox> 
+
+                                                <md-checkbox ng-model="search.success">
+                                                  Success
+                                                </md-checkbox> 
+
+                                                <md-checkbox ng-model="search.time">
+                                                  Time
+                                                </md-checkbox> 
+                        <md-button class="md-raised md-primary" type="submit" value="Submit">Submit</md-button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src='/static/bower_components/jquery/dist/jquery.min.js'></script>
+    <script type="text/javascript" src='/static/bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+    <script type="text/javascript" src='/static/bower_components/angular/angular.js'></script>
+    <script type="text/javascript" src='/static/bower_components/angular-animate/angular-animate.js'></script>
+    <script type="text/javascript" src='/static/bower_components/angular-aria/angular-aria.js'></script>
+    <script type="text/javascript" src='/static/bower_components/angular-material/angular-material.js'></script>
+    <script type="text/javascript" src='/static/angular.min.js'></script>
+    <script type="text/javascript" src='/static/angular/app.js'></script>
+    <script type="text/javascript" src='/static/angular/controller.js'></script>
+    <script type="text/javascript" src='/static/angular/service.js'></script>
+    <script type="text/javascript" src="/static/angular-datatables-master/dist/angular-datatables.min.js"></script>
+    <script src="/static/Chart.bundle.js"></script>
+    <div class="container" style="padding-top: 50px">
+        <script type="text/javascript" src="/static/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+     <script src="/static/bower_components/toastr/toastr.js"></script>
+     <script src="/static/intro.js/intro.js"></script>
+
+</body>
+
+</html>
