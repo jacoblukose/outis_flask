@@ -1,4 +1,3 @@
-#docs falls here
 
 FLASK PACKAGE
 ==============
